@@ -24,10 +24,27 @@ div {
   pointer-events: none;
 }
 
+.sort_btn {
+  width: 100%;
+  text-align: left;
+  margin: 20px;
+}
+
+.sort_btn button { 
+  background-color: black;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+}
+
 .title_heart_area{ 
-  border: 1px solid red;
   display: flex;
   align-items: center;
+}
+
+.title_heart_area > h3 { 
+  cursor: pointer;
 }
 
 .heart_area {
@@ -41,6 +58,13 @@ div {
   border: none;
   font-size: 18px;
   cursor: pointer;
+}
+
+.modal { 
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #eee;
+  text-align: left;
 }
 
 @media (prefers-reduced-motion: no-preference) {
