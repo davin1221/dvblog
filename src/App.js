@@ -4,20 +4,13 @@ import './App.css';
 import { useState } from 'react';
 
 
-const Modal = (props) => { 
-
-    const editTitle = () => {
-      props.글정보.map((it)=> {
-        console.log(it)
-      })
-    }
-
+const Modal = ({글정보, id}) => { 
     return (
       <article className='modal'>
-        <h4>{props.글정보[0].title}</h4>
-        <p>{props.글정보[0].date}</p>
-        <p>{props.글정보[0].content}</p>
-        <button onClick={editTitle}>글수정</button>
+        <h4>{글정보[id].title}</h4>
+        <p>{글정보[id].date}</p>
+        <p>{글정보[id].content}</p>
+        <button>글수정</button>
       </article>
     )
 }
@@ -49,12 +42,8 @@ function App() {
    setData(sortInfo);
   }
 
-  const handleModal = (id) => { 
-    const newModal = modal.map((it)=> { 
-                        return [{isTrue: !isTrue, id: id}]
-                      })
-    setModal(newModal)
-    }
+  const handleModal = (index) => { 
+    setModal([{ isTrue: !modal[0].isTrue, id: index }]);
   }
 
 
@@ -69,11 +58,11 @@ function App() {
       </div>
       
 
-      {글정보.map((it)=> { 
+      {글정보.map((it, index)=> { 
         return (
         <article className='list' key={it.id}>
           <div className='title_heart_area'>
-            <h3 onClick={()=> handleModal(it.id)}>{it.title}</h3> 
+            <h3 onClick={()=> handleModal(index) }>{it.title}</h3> 
 
             <div className='heart_area'>
               <button onClick={()=> handleHeart(it.id)}>❤️</button>
@@ -87,7 +76,7 @@ function App() {
       })}
 
       {
-        modal.isTrue === true ?  <Modal 글정보={글정보}/> : null
+        modal[0].isTrue === true ?  <Modal 글정보={글정보} id={modal[0].id}/> : null
       }
 
 
