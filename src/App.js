@@ -1,27 +1,31 @@
 /* eslint-disable */ 
 
 import './App.css';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 
 const Modal = ({글정보, id}) => { 
+  console.log(글정보[id])
     return (
       <article className='modal'>
-        <h4>{글정보[id].title}</h4>
-        <p>{글정보[id].date}</p>
-        <p>{글정보[id].content}</p>
-        <button>글수정</button>
+        <div className='modal_title_date'>
+          <h3>{글정보[id].title}</h3>
+          <span>{new Date(글정보[id].date).toISOString().slice(0,10)}</span>
+        </div>
+        
+        <p className='modal_content'>{글정보[id].content}</p>
+
+        <span className='delete_area'>
+          <button>삭제</button>
+        </span>
+
       </article>
     )
 }
 
 function App() {
 
-  const [글정보, setData] = useState([
-    {id: 1, title: '여자 코트 추천', heart: 0, date: '2023-08-11', content:'퍼스널 컬러에 따른 코트 추천! 무엇이 있을까요?'},
-    {id: 2, title: '역삼 우동 맛집', heart: 2, date: '2023-08-12', content:'역삼 우동 맛집. 역시 역전우동 ~'},
-    {id: 3, title: '아이폰14pro 실사용 후기', heart: 3, date: '2023-08-13', content: '아이폰14 pro 새로우 기능 다이나믹 아일랜드!'},
-  ]);
+  const [글정보, setData] = useState([]);
 
   const [modal, setModal] = useState([{isTrue: false, id: 0}]);
 
@@ -37,15 +41,64 @@ function App() {
     setData(newInfo)
   }
   
-  const sort = () => { 
+  // 하트순 정렬
+  const sortHeart = () => { 
    const sortInfo = [...글정보].sort((a,b) => b.heart - a.heart)
    setData(sortInfo);
+  }
+
+  // 가나다순 정렬 
+  const sortAbc = () => { 
+    const sortInfo2 = [...글정보].sort((a,b) => a.title.localeCompare(b.title));
+    console.log("sortInfo2: ", sortInfo2)
+    setData(sortInfo2);
   }
 
   const handleModal = (index) => { 
     setModal([{ isTrue: !modal[0].isTrue, id: index }]);
   }
 
+  const [newItem, setNewItem] = useState({
+    title:"", 
+    content:"",
+  })
+  const handleChange = (e) => { 
+    setNewItem({...newItem, [e.target.name]:e.target.value})
+  }
+
+  const id = useRef(0);
+
+  const handleSubmit = () => { 
+    if(newItem.title.length === 0) {
+      alert("제목을 입력하세요.");
+      return;
+    } 
+    
+    if(newItem.content.length === 0) { 
+      alert("내용을 입력하세요.");
+      return;
+    }
+
+    const date = new Date().getTime();
+
+    const 새글정보 = {
+      id: id.current,
+      title: newItem.title,
+      content: newItem.content, 
+      date: date,
+      heart: 0
+    }
+
+    setData([새글정보, ...글정보]);
+
+    id.current += 1;
+
+    setNewItem({
+      title:"", 
+      content:"",
+    })
+
+  }
 
   return (
     <div className="App">
@@ -54,26 +107,54 @@ function App() {
       </div>
 
       <div className='sort_btn'>
-       <button onClick={sort}>하트순으로 정렬</button>
+       <button onClick={sortHeart}>하트순으로 정렬</button>
+       <button onClick={sortAbc} style={{marginLeft : "10px"}}>가나다순으로 정렬</button>
+      </div>
+
+      <div className='write_area'>
+        <h3>글 작성</h3>
+
+        <div className='write_title_area'>
+          <span>제목</span>
+          <input name='title' onChange={handleChange}
+                 value={newItem.title}/>
+        </div>
+
+        <div className='write_content_area'>
+          <div>
+            <span>내용</span>
+            <textarea name='content' 
+                      onChange={handleChange}
+                      value={newItem.content}/>
+          </div>
+          
+          <div>
+            <button onClick={handleSubmit}>작성</button>
+          </div>
+        </div>
       </div>
       
 
-      {글정보.map((it, index)=> { 
-        return (
-        <article className='list' key={it.id}>
-          <div className='title_heart_area'>
-            <h3 onClick={()=> handleModal(index) }>{it.title}</h3> 
+      
+      <div className='list_area'>
+        {글정보.map((it, index)=> { 
+          return (
+          <article className='list' key={it.id}>
+            <div className='title_heart_area'>
+              <h3 onClick={()=> handleModal(index) }>{it.title}</h3> 
 
-            <div className='heart_area'>
-              <button onClick={()=> handleHeart(it.id)}>❤️</button>
-              <span>{it.heart}</span>
+              <div className='heart_area'>
+                <button onClick={()=> handleHeart(it.id)}>❤️</button>
+                <span>{it.heart}</span>
+              </div>
             </div>
-          </div>
 
-        <p>{it.date}</p>
-        </article>
-        )
-      })}
+          <p>{new Date(it.date).toISOString().slice(0,10)}</p>
+          </article>
+          )
+        })}
+      </div>
+      
 
       {
         modal[0].isTrue === true ?  <Modal 글정보={글정보} id={modal[0].id}/> : null
