@@ -4,8 +4,12 @@ import './App.css';
 import { useState, useRef } from 'react';
 
 
-const Modal = ({글정보, id}) => { 
-  console.log(글정보[id])
+const Modal = ({글정보, id, onDelete}) => { 
+
+  const handleDelete = () => { 
+    if(window.confirm('해당 글을 삭제하시겠습니까?')) onDelete(글정보[id].id);
+  }
+
     return (
       <article className='modal'>
         <div className='modal_title_date'>
@@ -16,7 +20,7 @@ const Modal = ({글정보, id}) => {
         <p className='modal_content'>{글정보[id].content}</p>
 
         <span className='delete_area'>
-          <button>삭제</button>
+          <button onClick={handleDelete}>삭제</button>
         </span>
 
       </article>
@@ -97,7 +101,11 @@ function App() {
       title:"", 
       content:"",
     })
+  }
 
+  const onDelete = (id) => { 
+    setData((글정보)=> 글정보.filter((it)=> it.id !== id));
+    setModal([{ isTrue: !modal[0].isTrue, id: '' }]);
   }
 
   return (
@@ -157,7 +165,9 @@ function App() {
       
 
       {
-        modal[0].isTrue === true ?  <Modal 글정보={글정보} id={modal[0].id}/> : null
+        modal[0].isTrue === true ?  <Modal 글정보={글정보} 
+                                           id={modal[0].id} 
+                                           onDelete={onDelete} /> : null
       }
 
 
